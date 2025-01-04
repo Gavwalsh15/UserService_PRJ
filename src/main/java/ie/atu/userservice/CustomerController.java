@@ -56,9 +56,9 @@ public class CustomerController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createCustomer(@Valid @RequestBody Customer customer) {
-        customerRepository.save(customer);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+        Customer savedCustomer = customerRepository.save(customer);
+        return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
 
 
@@ -70,4 +70,7 @@ public class CustomerController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
 }

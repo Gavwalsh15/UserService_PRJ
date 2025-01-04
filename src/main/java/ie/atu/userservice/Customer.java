@@ -39,14 +39,14 @@ public class Customer {
     private String address;
 
     @NotBlank(message = "Username is required.")
-    @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters.")
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters.")
     private String username;
 
     @NotBlank(message = "Password is required.")
-    @Size(min = 8, message = "Password must be at least 8 characters long.")
+    @Size(min = 4, message = "Password must be at least 4 characters long.")
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$",
-            message = "Password must contain at least one letter, one number, and a special character."
+            regexp = "^(?=.*[0-9])(?=.*[A-Z]).*$",
+            message = "Password must contain at least one uppercase letter and one number."
     )
     private String password;
 }
