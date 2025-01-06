@@ -1,6 +1,7 @@
 package ie.atu.userservice;
 
 import jakarta.validation.Valid;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +72,10 @@ public class CustomerController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
+    @PostMapping("/add-order")
+    public ResponseEntity<Order> addOrder(@RequestBody @Valid Order order) {
+        Optional<Customer> customer = customerRepository.findByUsername(order.getUsername());
+        order.setCustomerAddress(customer.get().getAddress());
+        return new ResponseEntity<>(order, HttpStatus.CREATED);
+    }
 }
