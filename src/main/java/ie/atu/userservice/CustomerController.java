@@ -1,7 +1,7 @@
 package ie.atu.userservice;
 
 import jakarta.validation.Valid;
-import org.aspectj.weaver.ast.Or;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,11 @@ import java.util.Optional;
 public class CustomerController {
 
     private final CustomerRepository customerRepository;
+    private final RestaurantServiceClient restaurantServiceClient;
 
-    public CustomerController(CustomerRepository customerRepository) {
+    public CustomerController(CustomerRepository customerRepository, RestaurantServiceClient restaurantServiceClient) {
         this.customerRepository = customerRepository;
+        this.restaurantServiceClient = restaurantServiceClient;
     }
 
     @GetMapping
@@ -73,9 +75,9 @@ public class CustomerController {
     }
 
     @PostMapping("/add-order")
-    public ResponseEntity<Order> addOrder(@RequestBody @Valid Order order) {
+    public ResponseEntity<ResponseEntity<Order>> addOrder(@RequestBody @Valid Order order) {
         Optional<Customer> customer = customerRepository.findByUsername(order.getUsername());
         order.setCustomerAddress(customer.get().getAddress());
-        return new ResponseEntity<>(order, HttpStatus.CREATED);
+        return new ResponseEntity<>(restaurantServiceClient.addNewOrder(order), HttpStatus.CREATED);
     }
 }
