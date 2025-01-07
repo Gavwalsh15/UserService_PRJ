@@ -30,6 +30,14 @@ public class CustomerController {
         return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    //for reviewService
+    @GetMapping("/{id}/username")
+    public ResponseEntity<String> getUserNameById(@PathVariable String id) {
+        Optional<Customer> customer = customerRepository.findById(Long.valueOf(id));
+        return customer.map(c -> ResponseEntity.ok(c.getUsername()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/login")
     public ResponseEntity<HashMap<String, Object>> loginCustomer(@RequestBody LoginRequest loginRequest) {
         Optional<Customer> customer;
@@ -71,6 +79,6 @@ public class CustomerController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
+    //@PostMapping("/")
+    //public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
 }
