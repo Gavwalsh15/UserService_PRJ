@@ -33,6 +33,7 @@ jobs:
 
       - name: Run Checkstyle linting
         run: mvn checkstyle:check
+        continue-on-error: true
 
       - name: Upload Checkstyle Report as Artifact
         uses: actions/upload-artifact@v3

@@ -132,14 +132,11 @@
                     <linkXRef>false</linkXRef>
                     <outputFile>${project.build.directory}/target/checkstyle-result.txt</outputFile>
                     <maxViolations>10000</maxViolations>
-                    <skip>true</skip>
+
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
