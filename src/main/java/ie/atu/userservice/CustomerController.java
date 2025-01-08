@@ -14,9 +14,11 @@ import java.util.Optional;
 public class CustomerController {
 
     private final CustomerRepository customerRepository;
+    private final RestaurantServiceClient restaurantServiceClient;
 
-    public CustomerController(CustomerRepository customerRepository) {
+    public CustomerController(CustomerRepository customerRepository, RestaurantServiceClient restaurantServiceClient) {
         this.customerRepository = customerRepository;
+        this.restaurantServiceClient = restaurantServiceClient;
     }
 
     @GetMapping
@@ -39,26 +41,29 @@ public class CustomerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<HashMap<String, Object>> loginCustomer(@RequestBody LoginRequest loginRequest) {
-        Optional<Customer> customer;
+    public ResponseEntity<HashMap<String, Object>> loginCustomer(@RequestBody @Valid LoginRequest loginRequest) {
+        Optional<Customer> customer = Optional.empty();
         HashMap<String, Object> response = new HashMap<>();
 
-        if(loginRequest.getEmail() != null && loginRequest.getPassword() != null) {
+        if (loginRequest.getEmail() != null && loginRequest.getPassword() != null) {
             customer = customerRepository.findByEmail(loginRequest.getEmail());
-        }else if(loginRequest.getUsername() != null && loginRequest.getPassword() != null) {
+        } else if (loginRequest.getUsername() != null && loginRequest.getPassword() != null) {
             customer = customerRepository.findByUsername(loginRequest.getUsername());
-        }else{
-            response.put("message", "Username or email is not found");
+        }
+
+        Customer foundCustomer;
+        try {
+            foundCustomer = customer.get();
+        } catch (Exception e) {
+            response.put("error", "Username or email is not found");
             return ResponseEntity.badRequest().body(response);
         }
 
-        Customer foundCustomer = customer.get();
-
-        if(loginRequest.getPassword().equals(foundCustomer.getPassword())){
+        if (loginRequest.getPassword().equals(foundCustomer.getPassword())) {
             response.put("username", foundCustomer.getUsername());
             return ResponseEntity.ok(response);
-        }else {
-            response.put("message", "Incorrect password");
+        } else {
+            response.put("error", "Incorrect password");
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -79,6 +84,19 @@ public class CustomerController {
         return ResponseEntity.notFound().build();
     }
 
-    //@PostMapping("/")
-    //public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
+
+    @PostMapping("/")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {}
+
+    @PostMapping("/add-order")
+    public ResponseEntity<Order> addOrder(@RequestBody @Valid Order order) {
+        Optional<Customer> customer = customerRepository.findByUsername(order.getUsername());
+        order.setCustomerAddress(customer.get().getAddress());
+        return restaurantServiceClient.addNewOrder(order);
+    }
+
+    @GetMapping("/get-orders/{username}")
+    public ResponseEntity<List<Order>> getOrders(@PathVariable String username) {
+        return restaurantServiceClient.getMyOrders(username);
+    }
 }
