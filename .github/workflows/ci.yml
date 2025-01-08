@@ -104,6 +104,6 @@ jobs:
 
       - name: Push Docker Image to Docker Hub
         run: |
-          docker tag product-pipe-image ${{ secrets.DOCKER_USERNAME }}/user-service-image:latest
+          docker tag user-service-image ${{ secrets.DOCKER_USERNAME }}/user-service-image:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/user-service-image:latest
   
